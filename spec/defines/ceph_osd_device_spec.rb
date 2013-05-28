@@ -41,9 +41,10 @@ class { 'ceph::osd':
     ) }
 
     it { should contain_exec('mkfs_device').with(
-      'command' => 'mkfs.xfs -f -d agcount=8 -l size=1024m -n size=64k /dev/device1',
-      'unless'  => 'xfs_admin -l /dev/device1',
-      'require' => ['Package[xfsprogs]', 'Exec[mkpart_device]']
+#      'command' => 'mkfs.btrfs -f -d agcount=8 -l size=1024m -n size=64k /dev/device1',
+      'command' => 'mkfs.btrfs /dev/device1',
+      'unless'  => 'btrfs device scan /dev/device1',
+      'require' => ['Package[btrfs-tools]', 'Exec[mkpart_device]']
     ) }
 
   end
@@ -87,7 +88,7 @@ class { 'ceph::osd':
         'ensure'  => 'mounted',
         'device'  => '/dev/device1',
         'atboot'  => true,
-        'fstype'  => 'xfs',
+        'fstype'  => 'btrfs',
         'options' => 'rw,noatime,inode64',
         'pass'    => 2,
         'require' => ['Exec[mkfs_device]', 'File[/var/lib/ceph/osd/osd.56]']

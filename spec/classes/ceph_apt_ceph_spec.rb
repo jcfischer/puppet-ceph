@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe 'ceph::apt::ceph' do
 
-  describe "when dist codename is wheezy" do
+  describe "when dist codename is raring64" do
 
     let :facts do
-      { :lsbdistcodename => 'wheezy' }
+      { :lsbdistcodename => 'raring64' }
     end
 
     describe "with default params" do
@@ -16,8 +16,8 @@ describe 'ceph::apt::ceph' do
       ) }
 
       it { should contain_apt__source('ceph').with(
-        'location' => 'http://ceph.com/debian-bobtail/',
-        'release'  => 'wheezy',
+        'location' => 'http://ceph.com/debian-cuttlefish/',
+        'release'  => 'raring64',
         'require'  => 'Apt::Key[ceph]',
         'before'   => 'Package[ceph]'
       ) }
@@ -26,12 +26,12 @@ describe 'ceph::apt::ceph' do
 
     describe "when overriding ceph release" do
       let :params do
-        { 'release' => 'octopuss' }
+        { 'release' => 'bobtail' }
       end
 
       it { should contain_apt__source('ceph').with(
-        'location' => 'http://ceph.com/debian-octopuss/',
-        'release'  => 'wheezy',
+        'location' => 'http://ceph.com/debian-bobtail/',
+        'release'  => 'raring64',
         'require'  => 'Apt::Key[ceph]',
         'before'   => 'Package[ceph]'
       ) }

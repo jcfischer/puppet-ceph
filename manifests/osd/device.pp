@@ -37,10 +37,9 @@ define ceph::osd::device (
   }
 
   exec { "mkfs_${devname}":
-    command => "mkfs.xfs -f -d agcount=${::processorcount} -l \
-size=1024m -n size=64k ${name}1",
-    unless  => "xfs_admin -l ${name}1",
-    require => [Package['xfsprogs'], Exec["mkpart_${devname}"]],
+    command => "mkfs.btrfs ${name}1",
+    unless  => "btrfs device scan ${name}1",
+    require => [Package['btrfs-tools'], Exec["mkpart_${devname}"]],
   }
 
   $blkid_uuid_fact = "blkid_uuid_${devname}1"
@@ -78,7 +77,7 @@ size=1024m -n size=64k ${name}1",
         ensure  => mounted,
         device  => "${name}1",
         atboot  => true,
-        fstype  => 'xfs',
+        fstype  => 'btrfs',
         options => 'rw,noatime,inode64',
         pass    => 2,
         require => [
