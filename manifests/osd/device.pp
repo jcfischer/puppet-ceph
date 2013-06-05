@@ -113,6 +113,11 @@ ceph osd crush set ${osd_id} 1 root=default host=${::hostname}",
         require => Exec["ceph-osd-register-${osd_id}"],
       }
 
+      file { "/etc/init.d/ceph-osd.${osd_id}":
+        ensure => link,
+        target => "/lib/init/upstart-job",
+      }
+
       service { "ceph-osd.${osd_id}":
         ensure    => running,
         start     => "service ceph start osd.${osd_id}",
