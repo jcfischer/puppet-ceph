@@ -40,6 +40,10 @@ define ceph::mon (
 
   notify { "mon data real: ${mon_data_real}": }
 
+  file { $mon_data_real :
+    ensure => "directory",
+  }
+
   ceph::conf::mon { $name:
     mon_addr => $mon_addr,
     mon_port => $mon_port,
@@ -54,7 +58,7 @@ define ceph::mon (
 --cap mon 'allow *'",
     creates => "/var/lib/ceph/tmp/keyring.mon.${name}",
     before  => Exec['ceph-mon-mkfs'],
-    require => Package['ceph'],
+    require => [Package['ceph'], File[$mon_data_real]],
   }
 
   exec { 'ceph-mon-mkfs':
