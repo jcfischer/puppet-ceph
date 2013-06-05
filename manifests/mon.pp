@@ -70,9 +70,9 @@ define ceph::mon (
 
   service { "ceph-mon.${name}":
     ensure  => running,
-    start   => "/etc/init.d/ceph start mon.${name}",
-    stop    => "/etc/init.d/ceph stop mon.${name}",
-    status  => "/etc/init.d/ceph status mon.${name}",
+    start   => '/etc/init.d/ceph start mon.0',
+    stop    => '/etc/init.d/ceph stop mon.0',
+    status  => '/etc/init.d/ceph status mon.0',
     require => Exec['ceph-mon-mkfs'],
   }
 
