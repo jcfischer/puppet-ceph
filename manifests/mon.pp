@@ -38,6 +38,8 @@ define ceph::mon (
 
   $mon_data_real = regsubst($::ceph::conf::mon_data, '\$id', $name)
 
+  notify { "mon data real: ${mon_data_real}": }
+
   ceph::conf::mon { $name:
     mon_addr => $mon_addr,
     mon_port => $mon_port,
