@@ -68,6 +68,10 @@ define ceph::mon (
     require => [Package['ceph'], Concat['/etc/ceph/ceph.conf']],
   }
 
+file { '/etc/init.d/ceph-mon.0':
+  ensure => link,
+  target => "/lib/init/upstart-job",
+}
   service { "ceph-mon.${name}":
     ensure  => running,
     start   => '/etc/init.d/ceph start mon.0',
