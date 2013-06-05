@@ -68,15 +68,15 @@ define ceph::mon (
     require => [Package['ceph'], Concat['/etc/ceph/ceph.conf']],
   }
 
-file { '/etc/init.d/ceph-mon.0':
+file { "/etc/init.d/ceph-mon.${name}":
   ensure => link,
   target => "/lib/init/upstart-job",
 }
   service { "ceph-mon.${name}":
     ensure  => running,
-    start   => '/etc/init.d/ceph start mon.0',
-    stop    => '/etc/init.d/ceph stop mon.0',
-    status  => '/etc/init.d/ceph status mon.0',
+    start   => "service ceph start mon.${name}",
+    stop    => "service ceph stop mon.${name}",
+    status  => "service ceph status mon.${name}",
     require => Exec['ceph-mon-mkfs'],
   }
 
