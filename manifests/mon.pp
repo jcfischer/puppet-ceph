@@ -63,9 +63,8 @@ define ceph::mon (
   }
 
    exec { 'mkdir_data_dir':
-     path    => [ '/bin', '/usr/bin' ],
      command => "mkdir -p ${$mon_data_real}",
-     unless  => "test -d ${$mon_data_real}",
+     creates  => "${$mon_data_real}",
    }
 
   exec { 'ceph-mon-mkfs':
@@ -75,7 +74,7 @@ define ceph::mon (
     require => [Package['ceph'], Concat['/etc/ceph/ceph.conf'], Exec['mkdir_data_dir']],
   }
 
-  service { "mon.${name}":
+  service { "ceph-mon.${name}":
     ensure  => running,
     start   => "service ceph start mon.${name}",
     stop    => "service ceph stop mon.${name}",
