@@ -63,8 +63,8 @@ define ceph::mon (
   }
 
    exec { 'mkdir_data_dir':
-     command => "mkdir -p ${$mon_data_real}",
-     creates  => "${$mon_data_real}",
+     command => "mkdir -p $mon_data_real",
+     creates  => "$mon_data_real",
    }
 
   exec { 'ceph-mon-mkfs':
