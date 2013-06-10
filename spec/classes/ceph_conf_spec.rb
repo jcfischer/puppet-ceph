@@ -46,6 +46,7 @@ describe 'ceph::conf' do
           '[osd]',
           '  osd journal size = 4096',
           '  filestore flusher = false',
+          '  filestore xattr use omap = true',
           '  osd data = /var/lib/ceph/osd/osd.$id',
           '  osd journal = /var/lib/ceph/osd/osd.$id/journal',
           '  osd mkfs type = btrfs',
