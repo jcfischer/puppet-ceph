@@ -24,8 +24,7 @@ class role_ceph (
 class role_ceph_mon (
   $id
 ) {
-  include 'ceph::conf'
-  $mon_data_dir = regsubst($::ceph::conf::mon_data, '\$id', $id)
+  $mon_data_dir = regsubst('/var/lib/ceph/mon/mon.$id', '\$id', $id)
 
   file { $mon_data_dir:
     ensure  => directory,
