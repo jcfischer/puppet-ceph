@@ -55,13 +55,6 @@ define ceph::mon (
     require => Package['ceph'],
   }
 
-  file { $mon_data_real:
-    ensure  => directory,
-    owner   => 'root',
-    group   => 0,
-    mode    => '0755'
-  }
-
    exec { 'mkdir_data_dir':
      command => "mkdir -p $mon_data_real",
      creates  => "$mon_data_real",
