@@ -24,15 +24,15 @@ class role_ceph (
 class role_ceph_mon (
   $id
 ) {
+  include 'ceph::conf'
+  $mon_data_dir = regsubst($::ceph::conf::mon_data, '\$id', $id)
 
-$mon_data_real = regsubst($::ceph::conf::mon_data, '\$id', $id)
-
-file { $mon_data_real:
-  ensure  => directory,
-  owner   => 'root',
-  group   => 0,
-  mode    => '0755'
-}
+  file { $mon_data_dir:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 0,
+    mode    => '0755'
+  }
 
   class { 'role_ceph':
     fsid           => $::fsid,
