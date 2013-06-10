@@ -24,9 +24,10 @@ class role_ceph (
 class role_ceph_mon (
   $id
 ) {
+  $mon_data_dir_parent = '/var/lib/ceph/mon/'
   $mon_data_dir = regsubst('/var/lib/ceph/mon/mon.$id', '\$id', $id)
 
-  file { $mon_data_dir:
+  file { [ $mon_data_dir_parent, $mon_data_dir ]:
     ensure  => directory,
     owner   => 'root',
     group   => 0,
