@@ -55,11 +55,18 @@ define ceph::mon (
     require => Package['ceph'],
   }
 
+  file { $mon_data_real:
+    ensure  => directory,
+    owner   => 'root',
+    group   => 0,
+    mode    => '0755'
+  }
+
   exec { 'ceph-mon-mkfs':
     command => "ceph-mon --mkfs -i ${name} \
 --keyring /var/lib/ceph/tmp/keyring.mon.${name}",
     creates => "${mon_data_real}/keyring",
-    require => [Package['ceph'], Concat['/etc/ceph/ceph.conf']],
+    require => [Package['ceph'], Concat['/etc/ceph/ceph.conf'], File[$mon_data_real]],
   }
 
   service { "ceph-mon.${name}":
