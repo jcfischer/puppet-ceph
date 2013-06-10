@@ -62,11 +62,17 @@ define ceph::mon (
     mode    => '0755'
   }
 
+   exec { 'mkdir_data_dir':
+     path    => [ '/bin', '/usr/bin' ],
+     command => "mkdir -p ${$mon_data_real}",
+     unless  => "test -d ${$mon_data_real}",
+   }
+
   exec { 'ceph-mon-mkfs':
     command => "ceph-mon --mkfs -i ${name} \
 --keyring /var/lib/ceph/tmp/keyring.mon.${name}",
     creates => "${mon_data_real}/keyring",
-    require => [Package['ceph'], Concat['/etc/ceph/ceph.conf'], File[$mon_data_real]],
+    require => [Package['ceph'], Concat['/etc/ceph/ceph.conf'], Exec['mkdir_data_dir']],
   }
 
   service { "ceph-mon.${name}":
