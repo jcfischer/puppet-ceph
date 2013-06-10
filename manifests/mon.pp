@@ -34,9 +34,8 @@ define ceph::mon (
 ) {
 
   include 'ceph::package'
-  include 'ceph::conf'
 
-  $mon_data_real = regsubst($::ceph::conf::mon_data, '\$id', $name)
+  $mon_data_real = regsubst('/var/lib/ceph/mon/mon.$id:', '\$id', $name)
 
   ceph::conf::mon { $name:
     mon_addr => $mon_addr,
