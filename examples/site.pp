@@ -25,6 +25,13 @@ class role_ceph_mon (
   $id
 ) {
 
+file { '/var/lib/ceph/mon/mon.$id':
+  ensure  => directory,
+  owner   => 'root',
+  group   => 0,
+  mode    => '0755'
+}
+
   class { 'role_ceph':
     fsid           => $::fsid,
     auth_type      => 'cephx',

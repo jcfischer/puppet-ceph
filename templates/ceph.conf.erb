@@ -18,6 +18,7 @@
   public network = <%= @public_network %>
 <% end -%>
   filestore flusher = false
+  filestore xattr use omap = true
   osd data = <%= @osd_data %>
   osd journal = <%= @osd_journal_real %>
   osd mkfs type = btrfs
