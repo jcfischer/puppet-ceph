@@ -75,7 +75,7 @@ define ceph::mon (
     require => [Package['ceph'], Concat['/etc/ceph/ceph.conf'], Exec['mkdir_data_dir']],
   }
 
-  service { "ceph-mon.${name}":
+  service { "mon.${name}":
     ensure  => running,
     start   => "service ceph start mon.${name}",
     stop    => "service ceph stop mon.${name}",
@@ -92,7 +92,7 @@ $(ceph --name mon. --keyring ${mon_data_real}/keyring \
   auth get-or-create-key client.admin \
     mon 'allow *' \
     osd 'allow *' \
-    mds allow)",
+    mds 'allow *')",
     creates => '/etc/ceph/keyring',
     require => Package['ceph'],
     onlyif  => "ceph --admin-daemon /var/run/ceph/ceph-mon.${name}.asok \
