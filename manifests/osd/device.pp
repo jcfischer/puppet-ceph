@@ -21,6 +21,7 @@ define ceph::osd::device (
 
   include ceph::osd
   include ceph::conf
+  include ceph::params
 
   $devname = regsubst($name, '.*/', '')
 
@@ -44,7 +45,7 @@ define ceph::osd::device (
 
   $blkid_uuid_fact = "blkid_uuid_${devname}1"
   notify { "BLKID FACT ${devname}: ${blkid_uuid_fact}": }
-  $blkid = inline_template('<%= scope.lookupvar(blkid_uuid_fact) %>')
+  $blkid = inline_template('<%= scope.lookupvar(blkid_uuid_fact) or "undefined" %>')
   notify { "BLKID ${devname}: ${blkid}": }
 
   if $blkid != 'undefined' {
@@ -56,7 +57,7 @@ define ceph::osd::device (
 
     $osd_id_fact = "ceph_osd_id_${devname}1"
     notify { "OSD ID FACT ${devname}: ${osd_id_fact}": }
-    $osd_id = inline_template('<%= scope.lookupvar(osd_id_fact) %>')
+    $osd_id = inline_template('<%= scope.lookupvar(osd_id_fact) or "undefined" %>')
     notify { "OSD ID ${devname}: ${osd_id}":}
 
     if $osd_id != 'undefined' {
@@ -115,6 +116,7 @@ ceph osd crush set ${osd_id} 1 root=default host=${::hostname}",
 
       service { "ceph-osd.${osd_id}":
         ensure    => running,
+        provider  => $::ceph::params::service_provider,
         start     => "service ceph start osd.${osd_id}",
         stop      => "service ceph stop osd.${osd_id}",
         status    => "service ceph status osd.${osd_id}",
