@@ -79,7 +79,7 @@ define ceph::osd::device (
         device  => "${name}1",
         atboot  => true,
         fstype  => 'btrfs',
-        options => 'rw,noatime,inode64',
+        options => 'rw,noatime',
         pass    => 2,
         require => [
           Exec["mkfs_${devname}"],
