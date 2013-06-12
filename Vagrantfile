@@ -4,8 +4,15 @@
 Vagrant.configure("2") do |config|
   # Vagrant >1.1 config
   config.vm.box = "raring64"
-  #config.vm.box_url = "https://www.dropbox.com/s/kloqerzoetl1fyy/raring64_v2.box"
-  #config.vm.box_url = "https://www.dropbox.com/s/wc5k9l48l1r18aq/raring64_v1.box"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.box_url = "http://cloud-images.ubuntu.com/raring/current/raring-server-cloudimg-vagrant-amd64-disk1.box"
+    vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+    vb.customize ["modifyvm", :id, "--macaddress1", "auto"]
+  end
+  config.vm.provider "vmware_fusion" do |vf|
+    #vf.box_url = "https://www.dropbox.com/s/kloqerzoetl1fyy/raring64_v2.box"
+  end
 
   (0..0).each do |i|
     config.vm.define "mon#{i}" do |mon|
@@ -23,11 +30,15 @@ Vagrant.configure("2") do |config|
       osd.vm.network :private_network, ip: "192.168.252.10#{i}"
       osd.vm.provision :shell, :path => "examples/osd.sh"
       (0..1).each do |d|
-        #osd.vm.customize [ "createhd", "--filename", "disk-#{i}-#{d}", "--size", "5000" ]
-        #osd.vm.vmx[""] =
-        #osd.vm.customize [ "storageattach", :id, "--storagectl", "SATAController", "--port", 3+d, "--device", 0, "--type", "hdd", "--medium", "disk-#{i}-#{d}.vdi" ]
-        #osd.vm.vmx["scsi0:1.present"] = "TRUE"
-        #osd.vm.vmx["scsi0:1.fileName"] = "disk-#{i}-#{d}.vmdk"
+        config.vm.provider "virtualbox" do |vb|
+          vb.customize [ "createhd", "--filename", "disk-#{i}-#{d}", "--size", "5000" ]
+          vb.customize [ "storageattach", :id, "--storagectl", "SATAController", "--port", 3+d, "--device", 0, "--type", "hdd", "--medium", "disk-#{i}-#{d}.vdi" ]
+        end
+        config.vm.provider "vmware_fusion" do |vf|
+          #osd.vm.vmx[""] =
+          #osd.vm.vmx["scsi0:1.present"] = "TRUE"
+          #osd.vm.vmx["scsi0:1.fileName"] = "disk-#{i}-#{d}.vmdk"
+        end
       end
     end
   end
