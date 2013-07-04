@@ -34,6 +34,10 @@ class { "ceph::conf": fsid => "1234567890" }
   describe 'with default parameters' do
     it { should contain_ceph__conf__mon('42').with_mon_addr('169.254.0.1') }
 
+    it { should contain_file('/var/lib/ceph/mon/mon.42').with(
+        'ensure' => 'directory'
+    )}
+
     it { should contain_exec('ceph-mon-keyring').with(
       'command' => "ceph-authtool /var/lib/ceph/tmp/keyring.mon.42 \
 --create-keyring --name=mon. --add-key='hardtoguess' \

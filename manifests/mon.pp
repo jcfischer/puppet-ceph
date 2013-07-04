@@ -35,6 +35,7 @@ define ceph::mon (
 
   include 'ceph::package'
   include 'ceph::conf'
+  include 'ceph::params'
 
   $mon_data_real = regsubst($::ceph::conf::mon_data, '\$id', $name)
 
@@ -61,11 +62,16 @@ define ceph::mon (
     require => [Package['ceph'], File[$mon_data_real]],
   }
 
+   exec { 'mkdir_data_dir':
+     command => "mkdir -p $mon_data_real",
+     creates  => "$mon_data_real",
+   }
+
   exec { 'ceph-mon-mkfs':
     command => "ceph-mon --mkfs -i ${name} \
 --keyring /var/lib/ceph/tmp/keyring.mon.${name}",
     creates => "${mon_data_real}/keyring",
-    require => [Package['ceph'], Concat['/etc/ceph/ceph.conf']],
+    require => [Package['ceph'], Concat['/etc/ceph/ceph.conf'], Exec['mkdir_data_dir']],
   }
 
 file { "/etc/init.d/ceph-mon.${name}":
@@ -73,11 +79,12 @@ file { "/etc/init.d/ceph-mon.${name}":
   target => "/lib/init/upstart-job",
 }
   service { "ceph-mon.${name}":
-    ensure  => running,
-    start   => "service ceph start mon.${name}",
-    stop    => "service ceph stop mon.${name}",
-    status  => "service ceph status mon.${name}",
-    require => Exec['ceph-mon-mkfs'],
+    ensure   => running,
+    provider => $::ceph::params::service_provider,
+    start    => "service ceph start mon.${name}",
+    stop     => "service ceph stop mon.${name}",
+    status   => "service ceph status mon.${name}",
+    require  => Exec['ceph-mon-mkfs'],
   }
 
   exec { 'ceph-admin-key':
@@ -89,7 +96,7 @@ $(ceph --name mon. --keyring ${mon_data_real}/keyring \
   auth get-or-create-key client.admin \
     mon 'allow *' \
     osd 'allow *' \
-    mds allow)",
+    mds 'allow *')",
     creates => '/etc/ceph/keyring',
     require => Package['ceph'],
     onlyif  => "ceph --admin-daemon /var/run/ceph/ceph-mon.${name}.asok \
