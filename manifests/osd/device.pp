@@ -27,18 +27,21 @@ define ceph::osd::device (
 
   exec { "mktable_gpt_${devname}":
     command => "parted -a optimal --script ${name} mktable gpt",
+    path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
     unless  => "parted --script ${name} print|grep -sq 'Partition Table: gpt'",
     require => Package['parted']
   }
 
   exec { "mkpart_${devname}":
     command => "parted -a optimal -s ${name} mkpart ceph 0% 100%",
+    path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
     unless  => "parted ${name} print | egrep '^ 1.*ceph$'",
     require => [Package['parted'], Exec["mktable_gpt_${devname}"]]
   }
 
   exec { "mkfs_${devname}":
     command => "mkfs.btrfs ${name}1",
+    path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
     unless  => "btrfs device scan ${name}1",
     require => [Package['btrfs-tools'], Exec["mkpart_${devname}"]],
   }
@@ -51,6 +54,7 @@ define ceph::osd::device (
   if $blkid != 'undefined' {
     exec { "ceph_osd_create_${devname}":
       command => "ceph osd create ${blkid}",
+      path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
       unless  => "ceph osd dump | grep -sq ${blkid}",
       require => Ceph::Key['admin'],
     }
@@ -94,6 +98,7 @@ define ceph::osd::device (
 --mkkey \
 --osd-uuid ${blkid}
 ",
+        path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
         creates => "${osd_data}/keyring",
         require => [
           Mount[$osd_data],
@@ -105,12 +110,14 @@ define ceph::osd::device (
         command => "\
 ceph auth add osd.${osd_id} osd 'allow *' mon 'allow rwx' \
 -i ${osd_data}/keyring",
+        path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
         require => Exec["ceph-osd-mkfs-${osd_id}"],
       }
 
       exec { "ceph-osd-crush-${osd_id}":
         command => "\
 ceph osd crush set ${osd_id} 1 root=default host=${::hostname}",
+        path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
         require => Exec["ceph-osd-register-${osd_id}"],
       }
 
