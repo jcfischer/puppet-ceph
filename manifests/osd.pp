@@ -12,6 +12,7 @@
 # == Authors
 #
 #  François Charlier francois.charlier@enovance.com
+#  Daniele Stroppa   strp@zhaw.ch
 #
 # == Copyright
 #
@@ -25,7 +26,12 @@ class ceph::osd (
 
   include 'ceph::package'
 
-  ensure_packages( [ 'btrfs-tools', 'parted' ] )
+  if $::ceph::params::fs_type = 'btrfs' {
+    ensure_packages( [ 'btrfs-tools', 'parted' ] )
+  }
+  else {
+    ensure_packages( [ 'xfsprogs', 'parted' ] )
+  }
 
   Package['ceph'] -> Ceph::Key <<| title == 'admin' |>>
 

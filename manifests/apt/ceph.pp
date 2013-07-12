@@ -1,5 +1,4 @@
 class ceph::apt::ceph (
-  $release = 'cuttlefish'
 ) {
   apt::key { 'ceph':
     key        => '17ED316D',
@@ -7,8 +6,8 @@ class ceph::apt::ceph (
   }
 
   apt::source { 'ceph':
-    location => "http://ceph.com/debian-${release}/",
-    release  => $::lsbdistcodename,
+    location => "http://ceph.com/debian-$::ceph::params::ceph_release/",
+    release  => $::ceph::params::distro,
     require  => Apt::Key['ceph'],
     before   => Package['ceph'],
   }

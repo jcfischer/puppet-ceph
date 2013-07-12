@@ -15,6 +15,7 @@
 #
 #  François Charlier francois.charlier@enovance.com
 #  Sébastien Han     sebastien.han@enovance.com
+#  Daniele Stroppa   strp@zhaw.ch
 #
 # == Copyright
 #
@@ -60,5 +61,7 @@ class ceph::conf (
     order   => '01',
     content => template('ceph/ceph.conf.erb'),
   }
+
+  $osd_mkfs_type = $::ceph::params::fs_type
 
 }
