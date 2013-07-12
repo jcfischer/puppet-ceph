@@ -59,7 +59,7 @@ define ceph::osd::device (
   $blkid = inline_template('<%= scope.lookupvar(blkid_uuid_fact) or "undefined" %>')
   notify { "BLKID ${devname}: ${blkid}": }
 
-  if $blkid != 'undefined' {
+  if $blkid != 'undefined'  and defined( Ceph::Key['admin'] ){
     exec { "ceph_osd_create_${devname}":
       command => "ceph osd create ${blkid}",
       unless  => "ceph osd dump | grep -sq ${blkid}",

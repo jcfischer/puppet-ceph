@@ -56,16 +56,23 @@ define ceph::mon (
     require => Package['ceph'],
   }
 
-   exec { 'mkdir_data_dir':
-     command => "mkdir -p $mon_data_real",
-     creates  => "$mon_data_real",
-   }
-
   exec { 'ceph-mon-mkfs':
     command => "ceph-mon --mkfs -i ${name} \
 --keyring /var/lib/ceph/tmp/keyring.mon.${name}",
     creates => "${mon_data_real}/keyring",
-    require => [Package['ceph'], Concat['/etc/ceph/ceph.conf'], Exec['mkdir_data_dir']],
+    require => [
+      Package['ceph'],
+      Concat['/etc/ceph/ceph.conf'],
+      File[$mon_data_real]
+    ],
+  }
+
+  file { $mon_data_real:
+    ensure  => 'directory',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    require => Package['ceph']
   }
 
   service { "ceph-mon.${name}":
@@ -86,7 +93,7 @@ $(ceph --name mon. --keyring ${mon_data_real}/keyring \
   auth get-or-create-key client.admin \
     mon 'allow *' \
     osd 'allow *' \
-    mds 'allow *')",
+    mds allow)",
     creates => '/etc/ceph/keyring',
     require => Package['ceph'],
     onlyif  => "ceph --admin-daemon /var/run/ceph/ceph-mon.${name}.asok \
