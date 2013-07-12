@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "raring64"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.box_url = "http://cloud-images.ubuntu.com/raring/current/raring-server-cloudimg-vagrant-amd64-disk1.box"
+    #vb.box_url = "http://cloud-images.ubuntu.com/raring/current/raring-server-cloudimg-vagrant-amd64-disk1.box"
     vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
     vb.customize ["modifyvm", :id, "--macaddress1", "auto"]
   end
@@ -23,7 +23,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  (0..1).each do |i|
+  (0..0).each do |i|
     config.vm.define "osd#{i}" do |osd|
       osd.vm.hostname = "ceph-osd#{i}.test"
       osd.vm.network :private_network, ip: "192.168.251.10#{i}"
