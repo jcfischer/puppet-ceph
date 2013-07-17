@@ -7,7 +7,7 @@ class ceph::apt::ceph (
 
   apt::source { 'ceph':
     location => "http://ceph.com/debian-$::ceph::params::ceph_release/",
-    release  => $::ceph::params::distro,
+    release  => $::lsbdistcodename,
     require  => Apt::Key['ceph'],
     before   => Package['ceph'],
   }

@@ -26,7 +26,7 @@ class ceph::osd (
 
   include 'ceph::package'
 
-  if $::ceph::params::fs_type = 'btrfs' {
+  if $::ceph::params::fs_type == 'btrfs' {
     ensure_packages( [ 'btrfs-tools', 'parted' ] )
   }
   else {

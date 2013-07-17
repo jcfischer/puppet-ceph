@@ -38,7 +38,7 @@ define ceph::osd::device (
     require => [Package['parted'], Exec["mktable_gpt_${devname}"]]
   }
 
-  if $::ceph::params::fs_type = 'btrfs' {
+  if $::ceph::params::fs_type == 'btrfs' {
     exec { "mkfs_${devname}":
         command => "mkfs.btrfs ${name}1",
         unless  => "btrfs device scan ${name}1",
@@ -85,7 +85,7 @@ define ceph::osd::device (
         ensure => directory,
       }
 
-      if $::ceph::params::fs_type = 'btrfs' {
+      if $::ceph::params::fs_type == 'btrfs' {
         mount { $osd_data:
             ensure  => mounted,
             device  => "${name}1",

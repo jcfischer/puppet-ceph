@@ -10,10 +10,6 @@ class ceph::params {
   # Allowed: xfs (recommended for Production), btrfs (only for Testing)
   $fs_type = 'btrfs'
 
-  # Linux Distro Parameter
-  #
-  $distro = 'raring'
-
   case $::osfamily {
     'Debian': {
       case $::operatingsystem {
