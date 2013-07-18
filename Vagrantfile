@@ -20,6 +20,9 @@ Vagrant.configure("2") do |config|
       mon.vm.network :private_network, ip: "192.168.251.1#{i}"
       mon.vm.network :private_network, ip: "192.168.252.1#{i}"
       mon.vm.provision :shell, :path => "examples/mon.sh"
+      #config.vm.provider "virtualbox" do |vb|
+      #  vb.gui = true
+      #end
     end
   end
 
@@ -29,6 +32,9 @@ Vagrant.configure("2") do |config|
       osd.vm.network :private_network, ip: "192.168.251.10#{i}"
       osd.vm.network :private_network, ip: "192.168.252.10#{i}"
       osd.vm.provision :shell, :path => "examples/osd.sh"
+      #config.vm.provider "virtualbox" do |vb|
+      #  vb.gui = true
+      #end
       (0..1).each do |d|
         config.vm.provider "virtualbox" do |vb|
           vb.customize [ "createhd", "--filename", "disk-#{i}-#{d}", "--size", "5000" ]
