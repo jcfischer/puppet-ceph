@@ -25,12 +25,20 @@ class ceph::osd (
 ) {
 
   include 'ceph::package'
+  include 'ceph::params'
+
+  info('Entering osd.pp')
+
+  $fs = $::ceph::params::fs_type
+  info('Filesystem is ${fs}')
 
   if $::ceph::params::fs_type == 'btrfs' {
     ensure_packages( [ 'btrfs-tools', 'parted' ] )
+    info('BTRFS dependencies installed')
   }
   else {
     ensure_packages( [ 'xfsprogs', 'parted' ] )
+    info('XFS dependencies installed')
   }
 
   Package['ceph'] -> Ceph::Key <<| title == 'admin' |>>

@@ -24,6 +24,8 @@ define ceph::osd::device (
   include ceph::conf
   include ceph::params
 
+  info('Entering device.pp')
+
   $devname = regsubst($name, '.*/', '')
 
   exec { "mktable_gpt_${devname}":
