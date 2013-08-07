@@ -73,9 +73,11 @@ node /ceph-osd.?\.test/ {
 }
 
 node 'ceph-mds0.test' {
-    class { 'ceph_mds': id => 0 }
+
+  ceph::mds { '0': fsid => $::fsid }
 }
 
 node 'ceph-mds1.test' {
-    class { 'ceph_mds': id => 1 }
+
+  ceph::mds { '1': fsid => $::fsid }
 }

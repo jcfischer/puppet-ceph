@@ -5,14 +5,14 @@ Vagrant.configure("2") do |config|
   # Vagrant >1.1 config
   config.vm.box = "raring64"
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.box_url = "http://cloud-images.ubuntu.com/raring/current/raring-server-cloudimg-vagrant-amd64-disk1.box"
-    vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-    vb.customize ["modifyvm", :id, "--macaddress1", "auto"]
-  end
-  config.vm.provider "vmware_fusion" do |vf|
+  #config.vm.provider "virtualbox" do |vb|
+    config.vm.box_url = "http://cloud-images.ubuntu.com/raring/current/raring-server-cloudimg-vagrant-amd64-disk1.box"
+    #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+    #vb.customize ["modifyvm", :id, "--macaddress1", "auto"]
+  #end
+  #config.vm.provider "vmware_fusion" do |vf|
     #vf.box_url = "https://www.dropbox.com/s/kloqerzoetl1fyy/raring64_v2.box"
-  end
+  #end
 
   (0..0).each do |i|
     config.vm.define "mon#{i}" do |mon|
@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  (0..0).each do |i|
+  (0..1).each do |i|
     config.vm.define "osd#{i}" do |osd|
       osd.vm.hostname = "ceph-osd#{i}.test"
       osd.vm.network :private_network, ip: "192.168.251.10#{i}"
@@ -52,7 +52,8 @@ Vagrant.configure("2") do |config|
   (0..0).each do |i|
     config.vm.define "mds#{i}" do |mds|
       mds.vm.hostname = "ceph-mds#{i}.test"
-      mds.vm.network :private_network, ip: "192.168.251.15#{i}"
+      mds.vm.network :private_network, ip: "192.168.251.20#{i}"
+      mds.vm.network :private_network, ip: "192.168.252.20#{i}"
       mds.vm.provision :shell, :path => "examples/mds.sh"
     end
   end

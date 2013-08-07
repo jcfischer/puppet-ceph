@@ -36,6 +36,8 @@ class ceph::conf (
   include 'ceph::package'
   include 'ceph::params'
 
+  $osd_mkfs_type = $::ceph::params::fs_type
+
   if $auth_type == 'cephx' {
     $mode = '0660'
   } else {
@@ -62,7 +64,5 @@ class ceph::conf (
     order   => '01',
     content => template('ceph/ceph.conf.erb'),
   }
-
-  $osd_mkfs_type = $::ceph::params::fs_type
 
 }
