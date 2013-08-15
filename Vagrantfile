@@ -5,14 +5,14 @@ Vagrant.configure("2") do |config|
   # Vagrant >1.1 config
   config.vm.box = "raring64"
 
-  config.vm.provider "virtualbox" do |vb|
-    vb.box_url = "http://cloud-images.ubuntu.com/raring/current/raring-server-cloudimg-vagrant-amd64-disk1.box"
-    vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
-    vb.customize ["modifyvm", :id, "--macaddress1", "auto"]
-  end
-  config.vm.provider "vmware_fusion" do |vf|
+  #config.vm.provider "virtualbox" do |vb|
+    config.vm.box_url = "http://cloud-images.ubuntu.com/raring/current/raring-server-cloudimg-vagrant-amd64-disk1.box"
+    #vb.customize ["modifyvm", :id, "--nictype1", "virtio"]
+    #vb.customize ["modifyvm", :id, "--macaddress1", "auto"]
+  #end
+  #config.vm.provider "vmware_fusion" do |vf|
     #vf.box_url = "https://www.dropbox.com/s/kloqerzoetl1fyy/raring64_v2.box"
-  end
+  #end
 
   (0..0).each do |i|
     config.vm.define "mon#{i}" do |mon|
@@ -20,6 +20,9 @@ Vagrant.configure("2") do |config|
       mon.vm.network :private_network, ip: "192.168.251.1#{i}"
       mon.vm.network :private_network, ip: "192.168.252.1#{i}"
       mon.vm.provision :shell, :path => "examples/mon.sh"
+      #config.vm.provider "virtualbox" do |vb|
+      #  vb.gui = true
+      #end
     end
   end
 
@@ -29,6 +32,9 @@ Vagrant.configure("2") do |config|
       osd.vm.network :private_network, ip: "192.168.251.10#{i}"
       osd.vm.network :private_network, ip: "192.168.252.10#{i}"
       osd.vm.provision :shell, :path => "examples/osd.sh"
+      #config.vm.provider "virtualbox" do |vb|
+      #  vb.gui = true
+      #end
       (0..1).each do |d|
         config.vm.provider "virtualbox" do |vb|
           vb.customize [ "createhd", "--filename", "disk-#{i}-#{d}", "--size", "5000" ]
@@ -46,7 +52,8 @@ Vagrant.configure("2") do |config|
   (0..0).each do |i|
     config.vm.define "mds#{i}" do |mds|
       mds.vm.hostname = "ceph-mds#{i}.test"
-      mds.vm.network :private_network, ip: "192.168.251.15#{i}"
+      mds.vm.network :private_network, ip: "192.168.251.20#{i}"
+      mds.vm.network :private_network, ip: "192.168.252.20#{i}"
       mds.vm.provision :shell, :path => "examples/mds.sh"
     end
   end

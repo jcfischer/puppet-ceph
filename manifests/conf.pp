@@ -15,6 +15,7 @@
 #
 #  François Charlier francois.charlier@enovance.com
 #  Sébastien Han     sebastien.han@enovance.com
+#  Daniele Stroppa   strp@zhaw.ch
 #
 # == Copyright
 #
@@ -33,6 +34,9 @@ class ceph::conf (
 ) {
 
   include 'ceph::package'
+  include 'ceph::params'
+
+  $osd_mkfs_type = $::ceph::params::fs_type
 
   if $auth_type == 'cephx' {
     $mode = '0660'

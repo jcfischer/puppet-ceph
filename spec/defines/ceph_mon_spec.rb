@@ -52,7 +52,15 @@ class { "ceph::conf": fsid => "1234567890" }
       'command' => "ceph-mon --mkfs -i 42 --keyring /var/lib/ceph/tmp/keyring.mon.42",
       'path'    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
       'creates' => '/var/lib/ceph/mon/mon.42/keyring',
-      'require' => ['Package[ceph]','Concat[/etc/ceph/ceph.conf]']
+      'require' => ['Package[ceph]','Concat[/etc/ceph/ceph.conf]',
+        'File[/var/lib/ceph/mon/mon.42]']
+    )}
+
+    it { should contain_file('/var/lib/ceph/mon/mon.42').with(
+      'ensure' => 'directory',
+      'owner'  => 'root',
+      'group'  => 'root',
+      'mode'   => '0755'
     )}
 
     it { should contain_service('ceph-mon.42').with(

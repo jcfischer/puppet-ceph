@@ -10,6 +10,7 @@
 # == Authors
 #
 #  François Charlier francois.charlier@enovance.com
+#  Daniele Stroppa   strp@zhaw.ch
 #
 # == Copyright
 #
@@ -22,6 +23,8 @@ define ceph::osd::device (
   include ceph::osd
   include ceph::conf
   include ceph::params
+
+  info('Entering device.pp')
 
   $devname = regsubst($name, '.*/', '')
 
@@ -39,19 +42,28 @@ define ceph::osd::device (
     require => [Package['parted'], Exec["mktable_gpt_${devname}"]]
   }
 
-  exec { "mkfs_${devname}":
-    command => "mkfs.btrfs ${name}1",
-    path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
-    unless  => "btrfs device scan ${name}1",
-    require => [Package['btrfs-tools'], Exec["mkpart_${devname}"]],
+  if $::ceph::params::fs_type == 'btrfs' {
+    exec { "mkfs_${devname}":
+        command => "mkfs.btrfs ${name}1",
+        unless  => "btrfs device scan ${name}1",
+        require => [Package['btrfs-tools'], Exec["mkpart_${devname}"]],
+    }
   }
+  else {
+    exec { "mkfs_${devname}":
+        command => "mkfs.xfs -f -d agcount=${::processorcount} -l size=1024m -n size=64k ${name}1",
+        unless  => "xfs_admin -l ${name}1",
+        require => [Package['xfsprogs'], Exec["mkpart_${devname}"]],
+      }
+  }
+
 
   $blkid_uuid_fact = "blkid_uuid_${devname}1"
   notify { "BLKID FACT ${devname}: ${blkid_uuid_fact}": }
   $blkid = inline_template('<%= scope.lookupvar(blkid_uuid_fact) or "undefined" %>')
   notify { "BLKID ${devname}: ${blkid}": }
 
-  if $blkid != 'undefined' {
+  if $blkid != 'undefined'  and defined( Ceph::Key['admin'] ){
     exec { "ceph_osd_create_${devname}":
       command => "ceph osd create ${blkid}",
       path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
@@ -78,17 +90,33 @@ define ceph::osd::device (
         ensure => directory,
       }
 
-      mount { $osd_data:
-        ensure  => mounted,
-        device  => "${name}1",
-        atboot  => true,
-        fstype  => 'btrfs',
-        options => 'rw,noatime',
-        pass    => 2,
-        require => [
-          Exec["mkfs_${devname}"],
-          File[$osd_data]
-        ],
+      if $::ceph::params::fs_type == 'btrfs' {
+        mount { $osd_data:
+            ensure  => mounted,
+            device  => "${name}1",
+            atboot  => true,
+            fstype  => 'btrfs',
+            options => 'rw,noatime',
+            pass    => 2,
+            require => [
+              Exec["mkfs_${devname}"],
+              File[$osd_data]
+            ],
+        }
+      }
+      else {
+        mount { $osd_data:
+            ensure  => mounted,
+            device  => "${name}1",
+            atboot  => true,
+            fstype  => 'xfs',
+            options => 'rw,noatime,inode64',
+            pass    => 2,
+            require => [
+              Exec["mkfs_${devname}"],
+              File[$osd_data]
+            ],
+        }
       }
 
       exec { "ceph-osd-mkfs-${osd_id}":

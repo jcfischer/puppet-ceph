@@ -21,7 +21,7 @@
   filestore xattr use omap = true
   osd data = <%= @osd_data %>
   osd journal = <%= @osd_journal_real %>
-  osd mkfs type = btrfs
+  osd mkfs type = <%= @osd_mkfs_type %>
   keyring = <%= @osd_data %>/keyring
 
 [mds]

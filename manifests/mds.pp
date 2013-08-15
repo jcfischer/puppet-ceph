@@ -53,7 +53,7 @@ define ceph::mds (
     command =>"ceph auth get-or-create mds.${name} mds 'allow ' osd 'allow *' mon 'allow rwx'",
     path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
     creates => "/var/lib/ceph/mds/mds.${name}/keyring",
-    before => Service['ceph-mds.${name}'],
+    before  => Service["ceph-mds.${name}"],
     require => Package['ceph'],
   }
 
@@ -65,3 +65,4 @@ define ceph::mds (
     status   => "service ceph status mds.${name}",
     require  => Exec['ceph-mds-keyring'],
   }
+}

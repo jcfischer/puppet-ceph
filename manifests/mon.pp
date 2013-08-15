@@ -74,7 +74,19 @@ define ceph::mon (
 --keyring /var/lib/ceph/tmp/keyring.mon.${name}",
     path    => '/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin',
     creates => "${mon_data_real}/keyring",
-    require => [Package['ceph'], Concat['/etc/ceph/ceph.conf'], Exec['mkdir_data_dir']],
+    require => [
+      Package['ceph'],
+      Concat['/etc/ceph/ceph.conf'],
+      File[$mon_data_real]
+    ],
+  }
+
+  file { $mon_data_real:
+    ensure  => 'directory',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0755',
+    require => Package['ceph']
   }
 
 file { "/etc/init.d/ceph-mon.${name}":
